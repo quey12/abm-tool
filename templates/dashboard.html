@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ title }} - ABM Dashboard</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f0f2f5;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+        transition: background 0.3s, color 0.3s;
+      }
+      .dark-mode {
+        background: #1a1a1a;
+        color: #e0e0e0;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+        color: #1a73e8;
+      }
+      .dark-mode h1 {
+        color: #4a90e2;
+      }
+      .nav {
+        margin-bottom: 20px;
+      }
+      .nav a {
+        color: #1a73e8;
+        text-decoration: none;
+        font-weight: 500;
+        margin-right: 15px;
+      }
+      .dark-mode .nav a {
+        color: #4a90e2;
+      }
+      .nav a:hover {
+        text-decoration: underline;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .dark-mode table {
+        background: #2c2c2c;
+      }
+      th,
+      td {
+        padding: 15px;
+        text-align: left;
+      }
+      th {
+        background: #1a73e8;
+        color: white;
+        font-weight: 600;
+      }
+      .dark-mode th {
+        background: #4a90e2;
+      }
+      tr:nth-child(even) {
+        background: #f8f9fa;
+      }
+      .dark-mode tr:nth-child(even) {
+        background: #333;
+      }
+      tr:hover {
+        background: #e8f0fe;
+      }
+      .dark-mode tr:hover {
+        background: #444;
+      }
+      .description {
+        max-width: 500px;
+        word-wrap: break-word;
+      }
+      .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.2s;
+      }
+      .trash-btn {
+        background: #e63946;
+        color: white;
+      }
+      .trash-btn:hover {
+        background: #d00000;
+      }
+      .dark-mode-toggle {
+        background: #6c757d;
+        color: white;
+        margin-left: 10px;
+      }
+      .dark-mode-toggle:hover {
+        background: #495057;
+      }
+      @media (max-width: 768px) {
+        table,
+        th,
+        td {
+          display: block;
+          width: 100%;
+        }
+        th,
+        td {
+          padding: 10px;
+        }
+        .description {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>{{ title }}</h1>
+      <div class="nav">
+        <a href="/">Back to Index</a>
+        <button class="btn dark-mode-toggle" onclick="toggleDarkMode()">
+          Toggle Dark Mode
+        </button>
+      </div>
+      <form method="POST" action="/delete">
+        <input type="hidden" name="signal_type" value="{{ signal_type }}" />
+        <table>
+          <thead>
+            <tr>
+              <th>Select</th>
+              <th>Company</th>
+              <th>Description</th>
+              <th>Date</th>
+              <th>
+                {% if signal_type == 'Craigslist' %}City{% else %}Source{% endif
+                %}
+              </th>
+              <th>Link</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for signal in signals %}
+            <tr>
+              <td>
+                <input
+                  type="checkbox"
+                  name="signal_ids"
+                  value="{{ signal[0] }}"
+                />
+              </td>
+              <td>{{ signal[1] }}</td>
+              <td class="description">{{ signal[2] }}</td>
+              <td>{{ signal[3] }}</td>
+              <td>{{ signal[5] }}</td>
+              <td><a href="{{ signal[4] }}" target="_blank">View</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <br />
+        <button type="submit" class="btn trash-btn">🗑️ Trash Selected</button>
+      </form>
+    </div>
+    <script>
+      function toggleDarkMode() {
+        document.body.classList.toggle("dark-mode");
+        localStorage.setItem(
+          "darkMode",
+          document.body.classList.contains("dark-mode")
+        );
+      }
+      if (localStorage.getItem("darkMode") === "true") {
+        document.body.classList.add("dark-mode");
+      }
+    </script>
+  </body>
+</html>

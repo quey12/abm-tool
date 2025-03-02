@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ABM Tools - Unleash Your Lead Power</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
+        color: #fff;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow-x: hidden;
+      }
+      .container {
+        text-align: center;
+        padding: 40px 20px;
+        animation: fadeIn 1s ease-in-out;
+      }
+      h1 {
+        font-size: 3.5em;
+        font-weight: 700;
+        background: linear-gradient(90deg, #4a90e2, #1a73e8);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 20px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+      p.tagline {
+        font-size: 1.2em;
+        color: #b0b0b0;
+        margin-bottom: 40px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .button-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 15px 30px;
+        background: #1a73e8;
+        color: white;
+        text-decoration: none;
+        font-size: 1.1em;
+        font-weight: 600;
+        border-radius: 50px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+      }
+      .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        background: #1557b0;
+      }
+      .btn:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+      .btn-craigslist {
+        background: #e63946;
+      }
+      .btn-craigslist:hover {
+        background: #d00000;
+      }
+      .btn-ecom {
+        background: #2ecc71;
+      }
+      .btn-ecom:hover {
+        background: #27ae60;
+      }
+      .btn-x {
+        background: #1a73e8;
+      }
+      .btn-x:hover {
+        background: #1557b0;
+      }
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2.5em;
+        }
+        p.tagline {
+          font-size: 1em;
+        }
+        .button-grid {
+          grid-template-columns: 1fr;
+        }
+        .btn {
+          padding: 12px 20px;
+          font-size: 1em;
+        }
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>ABM Tools</h1>
+      <p class="tagline">
+        Unlock powerful leads for your next big move—ecom, influencers, and
+        beyond.
+      </p>
+      <div class="button-grid">
+        <a href="/craigslist" class="btn btn-craigslist">Craigslist Leads</a>
+        <a href="/ecom" class="btn btn-ecom">Ecom Businesses</a>
+        <a href="/x" class="btn btn-x">X Influencers</a>
+      </div>
+    </div>
+  </body>
+</html>
