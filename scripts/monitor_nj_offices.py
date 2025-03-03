@@ -1,4 +1,4 @@
-# scripts/monitor_nj_philly_pa_offices.py
+# scripts/monitor_nj_offices.py
 import requests
 from bs4 import BeautifulSoup
 import sqlite3
@@ -69,18 +69,18 @@ def extract_company(title):
                 i += 1
     return candidates[0] if candidates else None
 
-def scrape_nj_philly_pa_offices():
+def scrape_nj_offices():
     cities = [
-        "https://newyork.craigslist.org",  # NJ border
-        "https://cnj.craigslist.org",     # Central NJ
+        "https://newyork.craigslist.org",
+        "https://cnj.craigslist.org",
         "https://southjersey.craigslist.org",
         "https://northjersey.craigslist.org",
         "https://philadelphia.craigslist.org",
-        "https://allentown.craigslist.org",  # Eastern PA
-        "https://scranton.craigslist.org",   # Northeast PA
-        "https://pennstate.craigslist.org",  # Central PA
-        "https://harrisburg.craigslist.org", # Central PA
-        "https://poconos.craigslist.org"     # Pocono Mountains
+        "https://allentown.craigslist.org",
+        "https://scranton.craigslist.org",
+        "https://pennstate.craigslist.org",
+        "https://harrisburg.craigslist.org",
+        "https://poconos.craigslist.org"
     ]
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
     session = requests.Session()
@@ -88,7 +88,6 @@ def scrape_nj_philly_pa_offices():
     session.mount('https://', HTTPAdapter(max_retries=retries))
     conn = sqlite3.connect('data/abm_tool.db')
 
-    region_keywords = ["nj", "new jersey", "jersey", "philly", "philadelphia", "pa", "pennsylvania", "vineland", "marlboro", "ewing", "princeton", "medford", "allentown", "scranton", "harrisburg", "poconos"]
     all_signals = []
     for city in cities:
         url = f"{city}/search/off"
@@ -112,19 +111,15 @@ def scrape_nj_philly_pa_offices():
                     title = title_tag.text.strip()
                     url = link_tag['href']
                     if any(kw in title.lower() for kw in ["office", "commercial", "building", "space"]):
-                        # Region-specific filter
-                        if any(rg in title.lower() for rg in region_keywords) or city != "https://newyork.craigslist.org":
-                            company = extract_company(title) or "Unknown"
-                            signals.append({
-                                'company': company,
-                                'description': title,
-                                'date': '2025-03-03',
-                                'url': url,
-                                'source': f'Craigslist ({city.split("//")[1].split(".")[0]})'
-                            })
-                            print(f"Signal found: {company} - {title}")
-                else:
-                    print("No title or URL found in listing")
+                        company = extract_company(title) or "Unknown"
+                        signals.append({
+                            'company': company,
+                            'description': title,
+                            'date': '2025-03-03',
+                            'url': url,
+                            'source': f'Craigslist ({city.split("//")[1].split(".")[0]})'
+                        })
+                        print(f"Signal found: {company} - {title}")
             all_signals.extend(signals)
             save_to_db(signals, conn)  # Save per city
             time.sleep(2)
@@ -138,5 +133,5 @@ def scrape_nj_philly_pa_offices():
 
 if __name__ == "__main__":
     print("Running main function...")
-    signals = scrape_nj_philly_pa_offices()
+    signals = scrape_nj_offices()
     print("Script completed.")

@@ -40,10 +40,19 @@ def x_dashboard():
 def offices_dashboard():
     conn = sqlite3.connect('data/abm_tool.db')
     c = conn.cursor()
-    c.execute("SELECT DISTINCT i.signal_id, c.name, i.description, i.date, i.url, i.source FROM office_buildings i JOIN companies c ON i.company_id = c.company_id ORDER BY i.date DESC")
+    c.execute("SELECT DISTINCT i.signal_id, c.name, i.description, i.date, i.url, i.source, i.contacted FROM office_buildings i JOIN companies c ON i.company_id = c.company_id ORDER BY i.date DESC")
     signals = c.fetchall()
     conn.close()
     return render_template('dashboard.html', signals=signals, signal_type='Offices', title='Office Buildings')
+
+@app.route('/office-managers')
+def office_managers_dashboard():
+    conn = sqlite3.connect('data/abm_tool.db')
+    c = conn.cursor()
+    c.execute("SELECT DISTINCT i.signal_id, c.name, i.description, i.date, i.url, i.source, i.contacted FROM office_manager_jobs i JOIN companies c ON i.company_id = c.company_id ORDER BY i.date DESC")
+    signals = c.fetchall()
+    conn.close()
+    return render_template('dashboard.html', signals=signals, signal_type='OfficeManagers', title='Office Manager Jobs')
 
 @app.route('/delete', methods=['POST'])
 def delete_signals():
@@ -52,11 +61,22 @@ def delete_signals():
     if signal_ids:
         conn = sqlite3.connect('data/abm_tool.db')
         c = conn.cursor()
-        table = {'Craigslist': 'intent_signals', 'Ecom': 'ecom_signals', 'X': 'x_signals', 'Offices': 'office_buildings'}[signal_type]
+        table = {'Craigslist': 'intent_signals', 'Ecom': 'ecom_signals', 'X': 'x_signals', 'Offices': 'office_buildings', 'OfficeManagers': 'office_manager_jobs'}[signal_type]
         c.executemany(f"DELETE FROM {table} WHERE signal_id = ?", [(int(sid),) for sid in signal_ids])
         conn.commit()
         conn.close()
     return redirect(url_for(f"{signal_type.lower()}_dashboard"))
+
+@app.route('/toggle_contacted/<int:signal_id>', methods=['POST'])
+def toggle_contacted(signal_id):
+    signal_type = request.referrer.split('/')[-1]
+    table = {'offices': 'office_buildings', 'office-managers': 'office_manager_jobs'}[signal_type]
+    conn = sqlite3.connect('data/abm_tool.db')
+    c = conn.cursor()
+    c.execute(f"UPDATE {table} SET contacted = 1 - contacted WHERE signal_id = ?", (signal_id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for(f"{signal_type}_dashboard"))
 
 if __name__ == "__main__":
     app.run(debug=True)
