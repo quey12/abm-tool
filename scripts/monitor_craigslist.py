@@ -1,3 +1,4 @@
+# scripts/monitor_craigslist.py
 import requests
 from bs4 import BeautifulSoup
 import sqlite3
@@ -13,7 +14,7 @@ def scrape_craigslist():
     ]
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
     signals = []
-    seen_descriptions = set()  # Track unique listings
+    seen_descriptions = set()
 
     for city in cities:
         for section in ["ggg", "jjj"]:
@@ -36,7 +37,7 @@ def scrape_craigslist():
                 if title_div and title_div.text.strip() and link_tag and link_tag.get('href'):
                     title = title_div.text.strip()
                     if title in seen_descriptions:
-                        continue  # Skip duplicates
+                        continue
                     seen_descriptions.add(title)
                     url = link_tag['href']
                     print(f"Listing title: {title}")
@@ -46,9 +47,10 @@ def scrape_craigslist():
                             signals.append({
                                 'company': comp,
                                 'description': title,
-                                'date': '2025-02-25',
+                                'date': '2025-03-05',
                                 'url': url,
-                                'city': city.split('//')[1].split('.')[0]
+                                'city': city.split('//')[1].split('.')[0],  # Keep city
+                                'source': 'Craigslist'  # Add source for consistency
                             })
                             print(f"Signal found: {comp} - {title} ({city})")
                 else:
@@ -59,7 +61,7 @@ def scrape_craigslist():
 
 def extract_company(title):
     exclude_words = {
-        "the", "and", "for", "with", "how", "what", "it", "who","new", "york", "area",
+        "the", "and", "for", "with", "how", "what", "it", "who", "new", "york", "area",
         "research", "ages", "test", "get", "paid", "today", "entry", "level", "b2b", "sales", "asap", "pay", "now",
         "hiring", "commission", "based", "remote", "team", "join", "our", "creative", "part", "time", "temporary",
         "college", "internship", "professional", "director", "manager", "group", "head", "growth", "huge", "street",
@@ -96,20 +98,22 @@ def save_to_db(signals):
         return
     conn = sqlite3.connect('data/abm_tool.db')
     c = conn.cursor()
-    try:
-        c.execute("ALTER TABLE intent_signals ADD COLUMN city TEXT")
-    except sqlite3.OperationalError:
-        pass
+    # Add both city and source columns
+    for column in ['city', 'source']:
+        try:
+            c.execute(f"ALTER TABLE intent_signals ADD COLUMN {column} TEXT")
+        except sqlite3.OperationalError:
+            pass  # Column already exists
     conn.commit()
 
     for signal in signals:
-        c.execute("INSERT OR IGNORE INTO companies (name, industry) VALUES (?, ?)", (signal['company'], 'Unknown'))
+        c.execute("INSERT OR IGNORE INTO companies (name, industry) VALUES (?, ?)", (signal['company'], 'Marketing'))
         c.execute("SELECT company_id FROM companies WHERE name = ?", (signal['company'],))
         company_id = c.fetchone()[0]
         c.execute("""
-            INSERT INTO intent_signals (company_id, signal_type, description, date, url, city)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (company_id, 'craigslist', signal['description'], signal['date'], signal['url'], signal['city']))
+            INSERT INTO intent_signals (company_id, signal_type, description, date, url, city, source)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (company_id, 'craigslist', signal['description'], signal['date'], signal['url'], signal['city'], signal['source']))
     conn.commit()
     conn.close()
     print(f"Saved {len(signals)} signals to database")

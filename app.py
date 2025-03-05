@@ -14,9 +14,10 @@ def index():
 def craigslist_dashboard():
     conn = sqlite3.connect('data/abm_tool.db')
     c = conn.cursor()
-    c.execute("SELECT DISTINCT i.signal_id, c.name, i.description, i.date, i.url, i.source FROM intent_signals i JOIN companies c ON i.company_id = c.company_id ORDER BY i.date DESC")
+    c.execute("SELECT DISTINCT i.signal_id, c.name, i.description, i.date, i.url, i.city FROM intent_signals i JOIN companies c ON i.company_id = c.company_id ORDER BY i.date DESC")
     signals = c.fetchall()
     conn.close()
+    print(f"Craigslist signals fetched: {len(signals)}")  # Debug
     return render_template('dashboard.html', signals=signals, signal_type='Craigslist', title='Craigslist Leads')
 
 @app.route('/ecom')
@@ -26,6 +27,7 @@ def ecom_dashboard():
     c.execute("SELECT DISTINCT i.signal_id, c.name, i.description, i.date, i.url, i.source FROM ecom_signals i JOIN companies c ON i.company_id = c.company_id ORDER BY i.date DESC")
     signals = c.fetchall()
     conn.close()
+    print(f"Ecom signals fetched: {len(signals)}")  # Debug
     return render_template('dashboard.html', signals=signals, signal_type='Ecom', title='Ecom Businesses')
 
 @app.route('/x')
@@ -35,6 +37,7 @@ def x_dashboard():
     c.execute("SELECT DISTINCT i.signal_id, c.name, i.description, i.date, i.url, i.source FROM x_signals i JOIN companies c ON i.company_id = c.company_id ORDER BY i.date DESC")
     signals = c.fetchall()
     conn.close()
+    print(f"X signals fetched: {len(signals)}")  # Debug
     return render_template('dashboard.html', signals=signals, signal_type='X', title='X Influencers')
 
 @app.route('/offices')

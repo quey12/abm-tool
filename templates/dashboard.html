@@ -99,6 +99,13 @@
       .trash-btn:hover {
         background: #d00000;
       }
+      .contact-btn {
+        background: #2ecc71;
+        color: white;
+      }
+      .contact-btn:hover {
+        background: #27ae60;
+      }
       .dark-mode-toggle {
         background: #6c757d;
         color: white;
@@ -146,6 +153,10 @@
                 {% if signal_type == 'Craigslist' %}City{% else %}Source{% endif
                 %}
               </th>
+              {% if signal_type != 'Craigslist' and signal_type != 'Ecom' and
+              signal_type != 'X' %}
+              <th>Contacted</th>
+              {% endif %}
               <th>Link</th>
             </tr>
           </thead>
@@ -163,6 +174,20 @@
               <td class="description">{{ signal[2] }}</td>
               <td>{{ signal[3] }}</td>
               <td>{{ signal[5] }}</td>
+              {% if signal_type != 'Craigslist' and signal_type != 'Ecom' and
+              signal_type != 'X' %}
+              <td>
+                <form
+                  method="POST"
+                  action="/toggle_contacted/{{ signal[0] }}"
+                  style="display: inline"
+                >
+                  <button type="submit" class="btn contact-btn">
+                    {{ 'Yes' if signal[6] else 'No' }}
+                  </button>
+                </form>
+              </td>
+              {% endif %}
               <td><a href="{{ signal[4] }}" target="_blank">View</a></td>
             </tr>
             {% endfor %}
