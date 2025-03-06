@@ -147,17 +147,23 @@
             <tr>
               <th>Select</th>
               <th>Company</th>
+              {% if signal_type == 'LiquorStores' %}
+              <th>Phone</th>
+              <th>Address</th>
+              {% else %}
               <th>Description</th>
               <th>Date</th>
-              <th>
-                {% if signal_type == 'Craigslist' %}City{% else %}Source{% endif
-                %}
-              </th>
-              {% if signal_type != 'Craigslist' and signal_type != 'Ecom' and
-              signal_type != 'X' %}
-              <th>Contacted</th>
               {% endif %}
+              <th>
+                {% if signal_type == 'Craigslist' %} City {% elif signal_type ==
+                'LiquorStores' %} Link {% else %} Source {% endif %}
+              </th>
+              {% if signal_type not in ['Craigslist', 'Ecom', 'X',
+              'LiquorStores'] %}
+              <th>Contacted</th>
+              {% endif %} {% if signal_type != 'LiquorStores' %}
               <th>Link</th>
+              {% endif %}
             </tr>
           </thead>
           <tbody>
@@ -171,11 +177,22 @@
                 />
               </td>
               <td>{{ signal[1] }}</td>
-              <td class="description">{{ signal[2] }}</td>
+              {% if signal_type == 'LiquorStores' %}
+              <td>{{ signal[2] }}</td>
+              <!-- Phone -->
               <td>{{ signal[3] }}</td>
+              <!-- Address -->
+              <td><a href="{{ signal[4] }}" target="_blank">View</a></td>
+              <!-- URL -->
+              {% else %}
+              <td class="description">{{ signal[2] }}</td>
+              <!-- Description -->
+              <td>{{ signal[3] }}</td>
+              <!-- Date -->
               <td>{{ signal[5] }}</td>
-              {% if signal_type != 'Craigslist' and signal_type != 'Ecom' and
-              signal_type != 'X' %}
+              <!-- City or Source -->
+              {% if signal_type not in ['Craigslist', 'Ecom', 'X',
+              'LiquorStores'] %}
               <td>
                 <form
                   method="POST"
@@ -189,6 +206,8 @@
               </td>
               {% endif %}
               <td><a href="{{ signal[4] }}" target="_blank">View</a></td>
+              <!-- URL -->
+              {% endif %}
             </tr>
             {% endfor %}
           </tbody>
